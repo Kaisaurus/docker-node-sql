@@ -1,0 +1,36 @@
+version: "3"
+services:
+  web:
+    build: .
+    command: npm start
+    depends_on:
+      - mysql
+    volumes:
+      - ./app:/app
+      - /app/node_modules # essential step to add installed node_modules after volume is added
+    ports:
+      - 80:3000
+
+  mysql:
+    image: mysql:5.5
+    environment:
+      - MYSQL_ROOT_PASSWORD=test
+      - MYSQL_DATABASE=test
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+    ports:
+      - 3306:3306
+
+  migrations:
+    build: ./db-migrations/.
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - mysql
+
+  fixtures:
+    build: ./db-fixtures/.
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - mysql
